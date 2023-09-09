@@ -1,0 +1,12 @@
+# Ambienti virtuali
+venv/
+env/
+
+# File bytecode Python
+*.pyc
+__pycache__/
+
+# File temporanei o specifici del sistema
+.DS_Store
+*.log
+*.swp

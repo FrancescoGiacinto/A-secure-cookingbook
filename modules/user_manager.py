@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, request, redirect, url_for
+from flask import Blueprint, render_template
 
 # Creating a blueprint for user-related routes
 user_manager = Blueprint('user_manager', __name__)

@@ -1,24 +1,24 @@
 from flask import Flask
-import os
+import os  # Import the os library to access environment variables
 
 def create_app(config_name=None):
-    app.config['SECRET_KEY'] = os.environ.get('FLASK_COOKINGBOOk_SECERT_KET', 'fallback_key_if_not_found')
-    
+    # Initialize the Flask app instance
     app = Flask(__name__)
+    
+    # Configure the app's secret key using an environment variable.
+    # If the environment variable isn't set, use a fallback key.
+    app.config['SECRET_KEY'] = os.environ.get('FLASK_COOKINGBOOK_SECRET_KEY', 'fallback_key_if_not_found')
 
-
+    # Import blueprints from other modules and register them with the app
     from .views import views
     from .user_manager import user_manager
 
     app.register_blueprint(views, url_prefix='/')
-    app.register_blueprint(user_manager, url_prefix='/')
+    app.register_blueprint(user_manager, url_prefix='/user')  # Changed prefix to '/user' to avoid route overlap
 
+    # These lines are redundant since blueprints are already imported and registered above
+    # from . import views, user_manager
+
+    # Return the configured app instance
     return app
 
-    # Import and register your views and blueprints
-    from . import views, user_manager
-
-    # For example, if user_manager is a blueprint:
-    # app.register_blueprint(user_manager.bp)
-
-    return app

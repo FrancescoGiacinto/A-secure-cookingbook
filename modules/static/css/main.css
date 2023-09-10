@@ -1,0 +1,194 @@
+/* Global styles */
+body {
+    font-family: Arial, sans-serif;
+    background-color: #F2F2F2; /* Pearl white */
+    background-image: linear-gradient(to bottom left, transparent 50%, #00BFFF 100%); /* Gradient with blue */
+    height: auto;
+    min-height: 100vh;
+    margin: 0;
+    line-height: 1.5; /* Improved line height for better readability */
+}
+
+/* Navbar styles */
+.navbar {
+    position: fixed;
+    top: 0;
+    right: 0;
+    width: 200px;
+    height: 100vh;
+    background-color: rgba(255, 255, 255, 0.9); /* Semi-transparent pearl white */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    box-shadow: -2px 0px 5px rgba(0, 0, 0, 0.1); /* Light shadow for depth */
+}
+
+.navbar a {
+    text-decoration: none;
+    color: #00BFFF; /* Blue */
+    margin: 10px 0;
+}
+
+.navbar a:hover {
+    text-decoration: underline;
+}
+
+
+/* Container and login-box styles */
+.container {
+    display: flex;
+    justify-content: center;
+    height: 100vh; 
+    padding-right: 15%;
+    padding-top: 10%;
+}
+
+.container .login-box {
+    position: relative;
+    width: 390px;
+    height: 420px;
+    background-color: transparent;
+    border: 2px solid #00BFFF; /* Blue border */
+    border-radius: 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    backdrop-filter: blur(15px); /* Blurry effect */
+}
+
+.login-box h2 {
+    font-size: 28px;
+    color: #00BFFF; /* Blue */
+    text-align: center;
+}
+
+.login-box .input-box {
+    position: relative;
+    width: 310px;
+    margin: 30px 0;
+    border-bottom: 2px solid #00BFFF; /* Blue underline for input */
+}
+
+.input-box input {
+    width: 100%;
+    height: 50px;
+    background: transparent;
+    border: none;
+    outline: none;
+    font-size: 16px;
+    color: #00BFFF; /* Blue text */
+    padding: 0 35px 0 5px;
+}
+
+.input-box input::placeholder {
+    color: #f9f9f9; /* Light white placeholder text */
+}
+
+.input-box .icon {
+    position: absolute;
+    right: 8px;
+    color: #00BFFF; /* Blue icon */
+    font-size: 18px;
+    line-height: 50px;
+}
+
+.login-box .remember-forget {
+    margin: -15px 0 15px;
+    font-size: 15px;
+    color: #00BFFF; /* Blue text */
+    display: flex;
+    justify-content: space-between;
+}
+
+.login-box button {
+    width: 100%;
+    height: 40px;
+    background: #00BFFF; /* Blue */
+    color: #fff; /* White text */
+    border: none;
+    outline: none;
+    border-radius: 40px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: all 0.5s;
+}
+
+.login-box button:hover {
+    background: #007BFF; /* Darker blue on hover */
+}
+
+.login-box .register-link, .remember-forget a {
+    font-size: 15px;
+    color: #00BFFF; /* Blue text */
+    text-decoration: none;
+}
+
+.login-box .register-link a:hover, .remember-forget a:hover {
+    text-decoration: underline;
+}
+
+.input-box input::placeholder {
+    color: #00BFFF; /* Blue placeholder text */
+}
+
+/* Responsive login-box styles */
+@media (max-width: 460px) {
+    .container .login-box {
+        width: 350px;
+    }
+  
+    .login-box .input-box {
+        width: 290px;
+    }
+}
+
+@media (max-width: 360px) {
+    .container .login-box {
+        width: 100%;
+        height: 100vh;
+        border: none;
+    }
+}
+/* ... Previous CSS ... */
+
+/* Responsive Navbar */
+@media (max-width: 768px) {
+    .navbar {
+        width: 100%; /* Full width for smaller screens */
+        height: auto;
+        flex-direction: row;
+        flex-wrap: wrap;
+        justify-content: center;
+        align-items: center;
+        position: relative; /* not fixed anymore */
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Shadow at the bottom */
+    }
+    
+    .navbar a {
+        margin: 10px; /* More spacing for smaller screens */
+    }
+}
+
+/* Responsive container */
+@media (max-width: 768px) {
+    .container {
+        padding-right: 5%; /* Reduced padding */
+        padding-top: 20%; /* Adjust top padding */
+    }
+}
+
+/* More extreme changes for very small screens */
+@media (max-width: 460px) {
+    .container {
+        padding-top: 10%; /* Reduce further for very small screens */
+    }
+
+    .container .login-box {
+        width: 90%; /* Use percentage to adapt better */
+    }
+
+    .login-box .input-box {
+        width: 80%; /* Again, use percentages for better adaptability */
+    }
+}

@@ -5,7 +5,7 @@ user_manager = Blueprint('user_manager', __name__)
 
 # Sample route for user registration
 @user_manager.route('/singin', methods=['GET', 'POST'])
-def register():
+def create_user():
     return render_template('singin.html') 
 
 # Sample route for user login
@@ -13,3 +13,18 @@ def register():
 def login():
     return render_template('home.html') 
 
+@user_manager.route('/user', methods=['GET'])
+def get_all_user():
+    return ''
+
+@user_manager.route('/user/<user_id>', methods=['GET'])
+def get_one_user():
+    return ''
+
+@user_manager.route('/user/<user_id>', methods= ['PUT'])
+def promote_user():
+    return ''
+
+@user_manager.route('/user/<user_id>', methods= ['DELETE'])
+def delete_user():
+    return ''

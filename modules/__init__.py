@@ -1,11 +1,11 @@
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 import os 
+from os import path
 
 db = SQLAlchemy() # Initialize SQLAlchemy database object
 DB_NAME = "database.db" 
-# Create the absolute path for the database file
-DB_PATH = os.path.join(os.getcwd(), "static", "database", DB_NAME) 
+DB_PATH = os.path.join(os.getcwd(), "modules\static\database", DB_NAME)
 
 def create_app(config_name=None):
     """
@@ -29,6 +29,9 @@ def create_app(config_name=None):
     from .user_manager import user_manager
     from .models import User, Recipe # Import the required models
 
+    with app.app_context():
+        db.create_all() 
+
     # Register the blueprints with their respective url prefixes
     app.register_blueprint(views, url_prefix='/')
     app.register_blueprint(user_manager, url_prefix='/user')
@@ -37,19 +40,7 @@ def create_app(config_name=None):
     return app
 
 def create_database(app):
-    """
-    Function to check if the database exists, 
-    and if not, create it.
-    """
-    # Create the parent directory for the database if it doesn't exist
-    parent_dir = os.path.dirname(DB_PATH)
-    if not os.path.exists(parent_dir):
-        os.makedirs(parent_dir)
-        
-    # Check if the database file exists at the specified DB_PATH
     if not os.path.exists(DB_PATH):
-        # If not, create the database tables within the app context
         with app.app_context():
             db.create_all()
         print('DATABASE HAS BEEN CREATED')
-

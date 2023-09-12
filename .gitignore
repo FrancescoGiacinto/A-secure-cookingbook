@@ -5,9 +5,11 @@ env/
 # File bytecode Python
 *.pyc
 __pycache__/
+modules/
+
 
 # File temporanei o specifici del sistema
 .DS_Store
 *.log
 *.swp
-static/database/*.db
+

@@ -1,5 +1,6 @@
 from flask import Flask
-import os  # Import the os library to access environment variables
+from flask_sqlalchemy import SQLAlchemy
+from os import path  # Import the os library to access environment variables
 
 db = SQLAlchemy()
 DB_NAME = "database.db"

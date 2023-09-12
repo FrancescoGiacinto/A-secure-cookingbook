@@ -1,32 +1,31 @@
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
-from os import path  # Import the os library to access environment variables
+import os
+from os import path
 
 db = SQLAlchemy()
 DB_NAME = "database.db"
+DB_PATH = os.path.join("static", "database", DB_NAME)  # Define a full path to the database file
 
 def create_app(config_name=None):
-    # Initialize the Flask app instance
     app = Flask(__name__)
     
-    # Configure the app's secret key using an environment variable.
-    # If the environment variable isn't set, use a fallback key.
+    # Set up the app's secret key, using an environment variable if available
     app.config['SECRET_KEY'] = os.environ.get('FLASK_COOKINGBOOK_SECRET_KEY', 'fallback_key_if_not_found')
-    app.config['SQLALCHEMY_DATABASE_URI'] = f'sqlite:///{DB_NAME}'
+    
+    # Use the full path to the database file
+    app.config['SQLALCHEMY_DATABASE_URI'] = f'sqlite:///{DB_PATH}'
+    
     db.init_app(app)
 
-    # Import blueprints from other modules and register them with the app
     from .views import views
     from .user_manager import user_manager
-
     from .models import User, Recipe
 
+    # Register blueprints
     app.register_blueprint(views, url_prefix='/')
-    app.register_blueprint(user_manager, url_prefix='/user')  # Changed prefix to '/user' to avoid route overlap
+    app.register_blueprint(user_manager, url_prefix='/user')
 
-    # These lines are redundant since blueprints are already imported and registered above
-    # from . import views, user_manager
-
-    # Return the configured app instance
-    return app
-
+    # Creation of the database has been moved to 'create_database' function
+    # with app.app_context():
+    #     db

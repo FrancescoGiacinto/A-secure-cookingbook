@@ -8,6 +8,9 @@ body {
     margin: 0;
     line-height: 1.5; /* Improved line height for better readability */
 }
+.hidden {
+    display: none;
+}
 
 /* Navbar styles */
 .navbar {

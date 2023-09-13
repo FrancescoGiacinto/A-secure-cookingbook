@@ -1,13 +1,29 @@
-from flask import Blueprint, render_template, request, flash, redirect, url_for
+from flask import Blueprint, render_template, request, flash, redirect, url_for, current_app, jsonify, make_response
+from flask_wtf import FlaskForm
+from wtforms import StringField, PasswordField, SubmitField, validators, BooleanField
 from .models import User, Recipe
 from . import db
 import uuid
 from werkzeug.security import generate_password_hash, check_password_hash
 import re
+import jwt
+import datetime
 
 # Creating a blueprint for user-related routes
 user_manager = Blueprint('user_manager', __name__)
 
+class RegistrationForm(FlaskForm):
+    name = StringField('Name', [validators.InputRequired()])
+    surname = StringField('Surname', [validators.InputRequired()])
+    email = StringField('Email', [validators.InputRequired(), validators.Email()])
+    password1 = PasswordField('Password', [validators.InputRequired()])
+    password2 = PasswordField('Confirm Password', [validators.InputRequired(), validators.EqualTo('password1', message='Passwords must match')])
+    submit = SubmitField('Sign Up')
+
+class LoginForm(FlaskForm):
+    email = StringField('Email', [validators.Email(), validators.DataRequired()])
+    password = PasswordField('Password', [validators.DataRequired()])
+    remember_me = BooleanField('Remember Me')
 
 def validate_password(password: str) -> bool:
     """
@@ -22,61 +38,88 @@ def validate_password(password: str) -> bool:
     return True
 
 
-# Sample route for user registration
+
 @user_manager.route('/singup', methods=['GET', 'POST'])
 def create_user():
-    if request.method == 'POST':
-        user_name = request.form.get('name')
-        user_surname = request.form.get('surname')
-        user_email = request.form.get('email')
-        password1 = request.form.get('password1')
-        password2 = request.form.get('password2')
+    form = RegistrationForm()
+
+    if form.validate_on_submit():
+        user_name = form.name.data
+        user_surname = form.surname.data
+        user_email = form.email.data
+        password1 = form.password1.data
+        # Nota: non hai bisogno di verificare la password2 poiché Flask-WTF lo farà per te con validators.EqualTo
 
         if not validate_password(password1):
             flash('Password must be at least 6 characters and include a special character.', 'danger')
             return redirect(url_for('user_manager.create_user'))
-
 
         existing_user = User.query.filter_by(email=user_email).first()
         if existing_user:
             flash('Email already exists!', 'danger')
             return redirect(url_for('user_manager.create_user'))
 
-
-        if password1 != password2:
-            flash('Passwords do not match!', 'danger')
-            return redirect(url_for('user_manager.create_user'))
-
         hashed_password = generate_password_hash(password1, method='scrypt')
 
-
-        new_user = User(public_id = str(uuid.uuid4()),
-                    name = user_name,
-                    surname = user_surname,
-                    email = user_email,
-                    password =hashed_password,
-                    admin = False)
-        
+        new_user = User(public_id=str(uuid.uuid4()),
+                        name=user_name,
+                        surname=user_surname,
+                        email=user_email,
+                        password=hashed_password,
+                        admin=False)
+        db.session.add(new_user)
         try:
-            print("Trying to commit...")
-            db.session.add(new_user)
             db.session.commit()
-            print("Commit successful.")
             flash('Successfully registered!', 'success')
-            return redirect(url_for('views.home_page', user_id=new_user.public_id)) 
+            return redirect(url_for('views.home_page', public_id=new_user.public_id))
         except:
             flash('There was an error creating your account!', 'danger')
             return redirect(url_for('user_manager.create_user'))
 
-    return render_template('singup.html') 
+    return render_template('singup.html', form=form)
+
 
 # Sample route for user login
 @user_manager.route('/login', methods=['GET', 'POST'])
 def login():
-    return render_template('home.html') 
+    form = LoginForm()
+    
+    if form.validate_on_submit():
+        user_email = form.email.data
+        password = form.password.data
+
+        user = User.query.filter_by(email=user_email).first()
+
+        if not user:
+            flash('User not found', 'danger')
+            return render_template('login.html', form=form)  # Render the template again with the error message
+
+        if not check_password_hash(user.password, password):
+            flash('Incorrect password', 'danger')
+            return render_template('login.html', form=form)  # Render the template again with the error message
+
+        # Generate the JWT token
+        token = jwt.encode({
+            'public_id': user.public_id,
+            'exp': datetime.datetime.utcnow() + datetime.timedelta(hours=12)
+        }, current_app.config['SECRET_KEY'])
+
+        # Typically, you'd redirect to a dashboard or home page after login
+        # For this example, I'm assuming a 'dashboard' route. Adjust as needed.
+        response = make_response(redirect(url_for('views.home_page', public_id=user.public_id)))
+        response.set_cookie('token', token)  # Set the JWT token as a cookie
+        return response
+    
+    return render_template('login.html', form=form)
+
+
+
+
 
 @user_manager.route('/user', methods=['GET'])
 def get_all_user():
+    users = User.query.all()
+     
     return ''
 
 @user_manager.route('/user/<user_id>', methods=['GET'])

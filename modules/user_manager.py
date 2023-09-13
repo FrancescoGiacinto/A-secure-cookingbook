@@ -34,31 +34,36 @@ def create_user():
 
         if not validate_password(password1):
             flash('Password must be at least 6 characters and include a special character.', 'danger')
-            return redirect(url_for('create_user'))
+            return redirect(url_for('user_manager.create_user'))
+
 
         existing_user = User.query.filter_by(email=user_email).first()
         if existing_user:
             flash('Email already exists!', 'danger')
-            return redirect(url_for('create_user'))
+            return redirect(url_for('user_manager.create_user'))
+
 
         if password1 != password2:
             flash('Passwords do not match!', 'danger')
-            return redirect(url_for('create_user'))
+            return redirect(url_for('user_manager.create_user'))
 
-        hashed_password = generate_password_hash(password1, method='sha256')
+        hashed_password = generate_password_hash(password1, method='scrypt')
 
 
-        new_user = User(public_id = uuid.uuid4(),
-                name = user_name,
-                surname = user_surname,
-                email = user_email,
-                password = hashed_password,
-                admin = False)
-        db.session.add(new_user)
+        new_user = User(public_id = str(uuid.uuid4()),
+                    name = user_name,
+                    surname = user_surname,
+                    email = user_email,
+                    password =hashed_password,
+                    admin = False)
+        
         try:
+            print("Trying to commit...")
+            db.session.add(new_user)
             db.session.commit()
+            print("Commit successful.")
             flash('Successfully registered!', 'success')
-            return redirect(url_for('views.home_page', user_id=new_user.public_id))  
+            return redirect(url_for('views.home_page', user_id=new_user.public_id)) 
         except:
             flash('There was an error creating your account!', 'danger')
             return redirect(url_for('user_manager.create_user'))

@@ -8,6 +8,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 import re
 import jwt
 import datetime
+from functools import wraps
 
 # Creating a blueprint for user-related routes
 user_manager = Blueprint('user_manager', __name__)
@@ -24,6 +25,27 @@ class LoginForm(FlaskForm):
     email = StringField('Email', [validators.Email(), validators.DataRequired()])
     password = PasswordField('Password', [validators.DataRequired()])
     remember_me = BooleanField('Remember Me')
+
+def token_required(f):
+    @wraps(f)
+    def decorated(*args, **kwargs):
+        token = request.cookies.get('token')  # Get the token from cookies
+
+        if not token:
+            return jsonify({'message':'Token is missing'}), 401
+        try :
+            data = jwt.decode(token, current_app.config['SECRET_KEY'], algorithms=['HS256'])
+            current_user = User.query.filter_by(public_id=data['public_id']).first()
+        except jwt.ExpiredSignatureError:
+            return jsonify({'message': 'Token has expired'}), 401
+        except jwt.InvalidTokenError:
+            return jsonify({'message': 'Token is invalid'}), 401
+        
+        return f( current_user, *args, **kwargs )
+    
+    return decorated
+
+
 
 def validate_password(password: str) -> bool:
     """
@@ -68,6 +90,8 @@ def create_user():
                         password=hashed_password,
                         admin=False)
         db.session.add(new_user)
+
+        
         try:
             db.session.commit()
             flash('Successfully registered!', 'success')
@@ -75,6 +99,8 @@ def create_user():
         except:
             flash('There was an error creating your account!', 'danger')
             return redirect(url_for('user_manager.create_user'))
+        
+
 
     return render_template('singup.html', form=form)
 

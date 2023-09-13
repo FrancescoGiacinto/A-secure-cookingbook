@@ -25,8 +25,8 @@ def create_app(config_name=None):
     db.init_app(app)
 
     # Import blueprints from other modules and register them with the app
-    from .views import views
     from .user_manager import user_manager
+    from .views import views    
     from .models import User, Recipe # Import the required models
 
     with app.app_context():

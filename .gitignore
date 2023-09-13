@@ -5,7 +5,7 @@ env/
 # File bytecode Python
 *.pyc
 __pycache__/
-modules/
+modules/static/database/
 
 
 # File temporanei o specifici del sistema
